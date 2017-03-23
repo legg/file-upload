@@ -1,0 +1,22 @@
+#%RAML 0.8
+title: File upload api
+version: v1
+mediaType: application/json
+/image:
+    post:
+      description: post data here
+      body:
+        multipart/form-data:
+          formParameters:
+            name:
+              description: The name
+              required: true
+            source:
+              description: The base64 string
+              required: true
+      responses:
+          200:
+            body:
+                application/json:
+                  example: |
+                    {message: 'OK'}
