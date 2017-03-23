@@ -13,7 +13,7 @@ class App extends Component {
         var reader = new FileReader()
         reader.onload = e => {
             const sourceBase64 = e.target.result
-            this.setState({source: sourceBase64, name: file.name})
+            this.setState({...this.state, source: sourceBase64, name: file.name})
         }
         reader.readAsDataURL(file)
     }
@@ -21,7 +21,7 @@ class App extends Component {
     uploadSource = () => {
         const form = new FormData()
         form.append('name', this.state.name)
-        form.append('source', this.state.source, this.state.name)
+        form.append('source', this.state.source)
 
         fetch('//localhost:3001/image', {
             method: 'POST',
@@ -31,6 +31,19 @@ class App extends Component {
         }).catch(error => {
             console.log('failed to post image', error)
         })
+    }
+
+    getSource = () => {
+        fetch('//localhost:3001/image/Maximus.jpg')
+            .then(response => {
+                return response.json()
+            })
+            .then(response => {
+                this.setState({...this.state, serverSource: response.source, name: response.name})
+            })
+            .catch(error => {
+                console.log('failed to get image', error)
+            })
     }
 
     render() {
@@ -43,10 +56,19 @@ class App extends Component {
                 <p className="App-intro">
                     To get started, edit <code>src/App.js</code> and save to reload.
                 </p>
+                <h2>Choose an image file</h2>
                 <FileSelect onChange={this.fileSelectHandler.bind(this)}/>
+                <h2>Preview the image</h2>
                 <FilePreview source={this.state.source}/>
                 <br/>
+                <h2>Upload the image <small>F12 check network request payload is OK</small></h2>
                 <button onClick={this.uploadSource.bind(this)}>upload source</button>
+                <br/>
+                <h2>Get the image from (mock) api</h2>
+                <button onClick={this.getSource.bind(this)}>get source</button>
+                <br/>
+                <h2>Preview the image from api</h2>
+                <FilePreview source={this.state.serverSource}/>
             </div>
         )
     }
